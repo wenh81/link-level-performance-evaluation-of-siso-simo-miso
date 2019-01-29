@@ -14,6 +14,6 @@ function [mrcSymbol] = mrc(rxSymbol, gain)
 %
 % Author & Date: Yang (i@snowztail.com) - 22 Jan 19
 
-mrcSymbol = gain' * rxSymbol / norm(gain) ^ 2;
+mrcSymbol = gain' * rxSymbol / norm(gain);
 end
 

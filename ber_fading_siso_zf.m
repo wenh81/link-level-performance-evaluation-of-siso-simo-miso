@@ -5,7 +5,7 @@ nSnr = length(snrPerBitDb);
 nTxs = 1;
 nRxs = 1;
 nChannels = nTxs * nRxs;
-nRepeats = 1e4;
+nRepeats = 1e2;
 nBits = 1e4;
 nSymbolsBpsk = nBits;
 nSymbolsQpsk = nBits / 2;
@@ -38,8 +38,8 @@ for iSnr = 1: nSnr
         zfSymbolBpsk = rxSymbolBpsk / gain;
         zfSymbolQpsk = rxSymbolQpsk / gain;
         % decode by maximum-likelihood estimation
-        [bitBpsk] = ml_bpsk(zfSymbolBpsk);
-        [bitQpsk] = ml_qpsk(zfSymbolQpsk);
+        [bitBpsk, ~] = ml_bpsk(zfSymbolBpsk);
+        [bitQpsk, ~] = ml_qpsk(zfSymbolQpsk);
         % count errors
         errorBpsk = errorBpsk + sum(xor(bitStream, bitBpsk));
         errorQpsk = errorBpsk + sum(xor(bitStream, bitQpsk));

@@ -1,4 +1,4 @@
-function [bitQpsk] = ml_qpsk(symbolQpsk)
+function [bitQpsk, snrAvgQpsk] = ml_qpsk(symbolQpsk)
 % Function: 
 %   - maximum-likelihood detector for QPSK symbols
 %
@@ -7,6 +7,7 @@ function [bitQpsk] = ml_qpsk(symbolQpsk)
 %
 % OutputArg(s):
 %   - bitQpsk: recovered bit stream
+%   - snrAvgQpsk: average output SNR
 %
 % Comments:
 %   - signal space is 2-d
@@ -17,6 +18,11 @@ function [bitQpsk] = ml_qpsk(symbolQpsk)
 %
 % Author & Date: Yang (i@snowztail.com) - 22 Jan 19
 
+powerNoise = 1;
+% compute average received bit power
+powerBitAvg = norm(symbolQpsk) ^ 2 / length(symbolQpsk) / 2;
+% and average output SNR
+snrAvgQpsk = powerBitAvg / powerNoise;
 bitQpsk = zeros(1, 2 * length(symbolQpsk));
 % demap to bits
 bitQpsk(1: 2: end - 1) = 1 / 2 * (1 - sign(real(symbolQpsk)));

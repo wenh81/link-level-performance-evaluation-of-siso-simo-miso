@@ -5,7 +5,7 @@ nSnr = length(snrPerBitDb);
 nTxs = 2;
 nRxs = 1;
 nChannels = nTxs * nRxs;
-nRepeats = 2e3;
+nRepeats = 1e2;
 nBits = 1e4;
 nSymbolsQpsk = nBits / 2;
 nPairs = nSymbolsQpsk / 2;
@@ -13,6 +13,7 @@ powerNoise = 1;
 anaBerMrcQpsk = zeros(nSnr, 1);
 anaBerAlamoutiQpsk = zeros(nSnr, 1);
 numBerQpsk = zeros(nSnr, 1);
+divGainAlamouti = zeros(nSnr, 1);
 %% Bit generation, symbol mapping, channel, ML estimation, and BER
 % generate raw bit stream
 bitStream = round(rand(1, nBits));
@@ -40,7 +41,7 @@ for iSnr = 1: nSnr
             recSymbolQpsk(2 * iPair - 1: 2 * iPair) = rxSymbolQpsk(2 * iPair - 1: 2 * iPair) * conj(gainEff);
         end
         % decode by maximum-likelihood estimation
-        [bitQpsk] = ml_qpsk(recSymbolQpsk);
+        [bitQpsk, ~] = ml_qpsk(recSymbolQpsk);
         % count errors
         errorQpsk = errorQpsk + sum(xor(bitStream, bitQpsk));
     end
@@ -51,8 +52,10 @@ for iSnr = 1: nSnr
     anaBerMrcQpsk(iSnr) = probMrc ^ 2 * (1 + 2 * (1 - probMrc));
     probAlamouti = 1 / 2 - 1 / 2 * (1 + 2 / snrPerBit) ^ (- 1 / 2);
     anaBerAlamoutiQpsk(iSnr) = probAlamouti ^ 2 * (1 + 2 * (1 - probAlamouti));
+    divGainAlamouti(iSnr) = diversity_gain(snrPerBit, numBerQpsk(iSnr));
 end
 %% Result plots
+% BER comparison
 figure;
 semilogy(snrPerBitDb, anaBerMrcQpsk, 'k-o');
 hold on;
@@ -64,6 +67,14 @@ legend('Analytical BER: MRC / MRT', 'Analytical BER: Alamouti', 'Numerical BER: 
 title('BER vs SNR of QPSK over a MISO Rayleigh fading channel with Alamouti coding');
 xlabel('SNR (dB)');
 ylabel('BER');
+% diversity gain
+figure(2);
+plot(divGainAlamouti, 'r-.x');
+grid on;
+legend('Diversity gain');
+title('Diversity gain of MISO Alamouti');
+xlabel('SNR (dB)');
+ylabel('Gain');
 % save data
 numBerQpskAlamouti = numBerQpsk;
-save('ber_set.mat', 'numBerQpskAlamouti', '-append');
+save('ber_set.mat', 'numBerQpskAlamouti', 'divGainAlamouti', '-append');
