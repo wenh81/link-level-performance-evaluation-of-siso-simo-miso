@@ -49,7 +49,7 @@ for iSnr = 1: nSnr
         [bitQpsk, snrQpsk(iRepeat)] = ml_qpsk(rxSymbolQpsk);
         % count errors
         errorBpsk = errorBpsk + sum(xor(bitStream, bitBpsk));
-        errorQpsk = errorBpsk + sum(xor(bitStream, bitQpsk));
+        errorQpsk = errorQpsk + sum(xor(bitStream, bitQpsk));
     end
     snrAvgBpsk(iSnr) = mean(snrBpsk);
     snrAvgQpsk(iSnr) = mean(snrQpsk);
